@@ -1,6 +1,8 @@
 #!/bin/bash
 
 id=101
+"ID,TIPO_REQUISICAO,MOMENTO,TIMESTAMP" >> "../../data/request_post_80_create_eds.csv"	
+
 for j in {1..20}
 do
 	id=$(echo "scale=2; $id + $j"|bc)

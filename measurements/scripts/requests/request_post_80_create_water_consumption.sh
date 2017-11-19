@@ -18,8 +18,8 @@ do
 	  echo $id",POST,BEGIN,"$(date +%s%N) >> "../../data/request_post_180_create_water_consumption.csv"
 	  curl -g -H "Content-Type:application/json" -X POST -d '{ "data":"'"$data"'","consumo":"'"$consumo"'" }' localhost:3000/edificio/"$ed_id"/consumo/new	  
 	  echo $id",POST,END,"$(date +%s%N) >> "../../data/request_post_180_create_water_consumption.csv"
-	  
-	  sleep 0.333s
+	  	  
+	  sleep 0.75s
 	done    
 done < "$filename"
 

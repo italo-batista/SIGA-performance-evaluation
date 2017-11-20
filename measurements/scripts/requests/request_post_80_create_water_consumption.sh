@@ -2,7 +2,7 @@
 
 id=4001
 filename="../../data/eds_ids.txt"
-"ID,TIPO_REQUISICAO,MOMENTO,TIMESTAMP" >> "../../data/request_post_80_create_water_consumption.csv"
+echo "ID,TIPO_REQUISICAO,MOMENTO,TIMESTAMP" >> "../../data/request_post_80_create_water_consumption.csv"
 
 while read -r line
 do

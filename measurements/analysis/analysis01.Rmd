@@ -3,11 +3,16 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+install.packages("knitr")
+install.packages("dplyr")
+install.packages("ggplot2")
+
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
 library(dplyr)
+library(ggplot2)
 ```
 
 ```{r}
@@ -54,5 +59,50 @@ post.180.80m = get_timestamp_diff(post.180.80m)
 post.80.1g = get_timestamp_diff(post.80.1g)
 post.80.500m = get_timestamp_diff(post.80.500m)
 post.80.80m = get_timestamp_diff(post.80.80m)
+```
+
+```{r}
+get.180.1g["RAM"] <- 1024
+get.180.500m["RAM"] <- 500
+get.180.80m["RAM"] <- 80
+
+get.180.1g["REQ_MIN"] <- 180
+get.180.500m["REQ_MIN"] <- 180
+get.180.80m["REQ_MIN"] <- 180
+
+post.180.1g["RAM"] <- 1024
+post.180.500m["RAM"] <- 500
+post.180.80m["RAM"] <- 80
+
+post.180.1g["REQ_MIN"] <- 180
+post.180.500m["REQ_MIN"] <- 180
+post.180.80m["REQ_MIN"] <- 180
+
+
+get.80.1g["RAM"] <- 1024
+get.80.500m["RAM"] <- 500
+get.80.80m["RAM"] <- 80
+
+get.80.1g["REQ_MIN"] <- 80
+get.80.500m["REQ_MIN"] <- 80
+get.80.80m["REQ_MIN"] <- 80
+
+post.80.1g["RAM"] <- 1024
+post.80.500m["RAM"] <- 500
+post.80.80m["RAM"] <- 80
+
+post.80.1g["REQ_MIN"] <- 80
+post.80.500m["REQ_MIN"] <- 80
+post.80.80m["REQ_MIN"] <- 80
+
+post.all <- rbind(post.180.1g,post.180.500m,post.180.80m,post.80.1g,post.80.500m,post.80.80m)
+get.all <- rbind(get.180.1g,get.180.500m,get.180.80m,get.80.1g,get.80.500m,get.80.80m)
+tests <- rbind(post.all, get.all)
+plot(log10(TIMESTAMP) ~ RAM, data = post.all)
+ggplot(data = post.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) +
+  geom_point(size=1, alpha=0.4) + ylim(1,2) #coloquei o lim pra tentar tirar os outliers da visualização
+
+ggplot(data = tests, aes(x=as.factor(REQ_MIN), y=TIMESTAMP, colour=as.factor(RAM))) +
+  geom_point(size=1, alpha=0.4) + ylim(0,200) #coloquei o lim pra tentar tirar os outliers da visualização
 ```
 

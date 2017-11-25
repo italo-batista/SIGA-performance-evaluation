@@ -39,7 +39,7 @@ get_timestamp_diff <- function(df){
   end = df %>% filter(df$MOMENTO == "END")
   
   df = left_join(begin, end, by=c("ID", "TIPO_REQUISICAO"))
-  df$TIMESTAMP = df$TIMESTAMP.y - df$TIMESTAMP.x
+  df$TIMESTAMP = (df$TIMESTAMP.y / 1000000) - (df$TIMESTAMP.x / 1000000)
   df = df %>% select("ID", "TIPO_REQUISICAO", "TIMESTAMP")
 
   return(df)
@@ -61,7 +61,7 @@ post.80.500m = get_timestamp_diff(post.80.500m)
 post.80.80m = get_timestamp_diff(post.80.80m)
 ```
 
-```{r}
+```{r warning=FALSE, message=FALSE, error=FALSE}
 get.180.1g["RAM"] <- 1024
 get.180.500m["RAM"] <- 500
 get.180.80m["RAM"] <- 80
@@ -98,11 +98,16 @@ post.80.80m["REQ_MIN"] <- 80
 post.all <- rbind(post.180.1g,post.180.500m,post.180.80m,post.80.1g,post.80.500m,post.80.80m)
 get.all <- rbind(get.180.1g,get.180.500m,get.180.80m,get.80.1g,get.80.500m,get.80.80m)
 tests <- rbind(post.all, get.all)
+```
+
+
+```{r  warning=FALSE, message=FALSE, error=FALSE}
 plot(log10(TIMESTAMP) ~ RAM, data = post.all)
+
 ggplot(data = post.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) +
-  geom_point(size=1, alpha=0.4) + ylim(1,2) #coloquei o lim pra tentar tirar os outliers da visualização
+  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) + ylim(1,2)
 
 ggplot(data = tests, aes(x=as.factor(REQ_MIN), y=TIMESTAMP, colour=as.factor(RAM))) +
-  geom_point(size=1, alpha=0.4) + ylim(0,200) #coloquei o lim pra tentar tirar os outliers da visualização
+  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) + ylim(0,150) 
 ```
 

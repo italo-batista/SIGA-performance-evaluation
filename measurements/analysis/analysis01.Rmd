@@ -30,6 +30,15 @@ get.80.80m = read.csv2(file="../data/80MB/request_get_80_reports_pdf.csv", sep =
 get.180.80m = read.csv2(file="../data/80MB/request_get_180_consumptions.csv", sep=",")
 post.80.80m = read.csv2(file="../data/80MB/request_post_80_create_water_consumption.csv", sep=",")
 post.180.80m = read.csv2(file="../data/80MB/request_post_180_create_water_consumptions.csv", sep=",")
+
+
+get.180.1g["TIPO_REQUISICAO"] <- 'GET'
+get.180.500m["TIPO_REQUISICAO"] <- 'GET'
+get.180.80m["TIPO_REQUISICAO"] <- 'GET'
+
+get.80.1g["TIPO_REQUISICAO"] <- 'GET'
+get.80.500m["TIPO_REQUISICAO"] <- 'GET'
+get.80.80m["TIPO_REQUISICAO"] <- 'GET'
 ```
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -102,12 +111,30 @@ tests <- rbind(post.all, get.all)
 
 
 ```{r  warning=FALSE, message=FALSE, error=FALSE}
+# Check the ylim
 plot(log10(TIMESTAMP) ~ RAM, data = post.all)
 
-ggplot(data = post.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) +
-  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) + ylim(1,2)
+posts_by_ram <- ggplot(data = post.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + geom_boxplot()
+  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
+posts_by_ram +labs(colour = "Requisições por minuto", x="Memória RAM Disponível (MB)", y= "Tempo de resposta (em milisegundo)")
 
-ggplot(data = tests, aes(x=as.factor(REQ_MIN), y=TIMESTAMP, colour=as.factor(RAM))) +
-  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) + ylim(0,150) 
+
+posts_by_req <- ggplot(data = post.all, aes(x=as.factor(REQ_MIN), y=log10(TIMESTAMP), colour=as.factor(RAM)))  + geom_boxplot()
+  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
+posts_by_req + ylim(1,2) +labs(colour = "Memória RAM Disponível (MB)", x="Requisições por minuto", y= "Tempo de resposta (em milisegundo)")
+
+
+#GET
+gets_by_ram <- ggplot(data = get.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + geom_boxplot()
+  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
+gets_by_ram +labs(colour = "Requisições por minuto", x="Memória RAM Disponível (MB)", y= "Tempo de resposta (em milisegundo)")
+
+
+gets_by_req <- ggplot(data = get.all, aes(x=as.factor(REQ_MIN), y=log10(TIMESTAMP), colour=as.factor(RAM)))  + geom_boxplot()
+  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
+gets_by_req + ylim(1,2) +labs(colour = "Memória RAM Disponível (MB)", x="Requisições por minuto", y= "Tempo de resposta (em milisegundo)")
+
+ggplot(data = tests, aes(x=as.factor(TIPO_REQUISICAO), y=TIMESTAMP, colour=as.factor(RAM))) +
+  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1)
 ```
 

@@ -13,9 +13,9 @@ do
 	  
 	  id=$(echo "scale=2; $id + 1"|bc)
 	  
-	  echo $id",POST,BEGIN,"$(date +%s%N) >> "../../data/request_get_180_consumptions.csv"
+	  echo $id",GET,BEGIN,"$(date +%s%N) >> "../../data/request_get_180_consumptions.csv"
 	  curl -g localhost:3000/edificio/"$ed_id"/consumo
-	  echo $id",POST,END,"$(date +%s%N) >> "../../data/request_get_180_consumptions.csv"
+	  echo $id",GET,END,"$(date +%s%N) >> "../../data/request_get_180_consumptions.csv"
 	  
 	  sleep 0.333s
 	done    

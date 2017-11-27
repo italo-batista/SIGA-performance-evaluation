@@ -3,16 +3,18 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-install.packages("knitr")
-install.packages("dplyr")
-install.packages("ggplot2")
+#install.packages("knitr")
+#install.packages("dplyr")
+#install.packages("ggplot2")
+
+library(dplyr)
+library(ggplot2)
 
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-library(dplyr)
-library(ggplot2)
+
 ```
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -30,6 +32,8 @@ get.80.80m = read.csv2(file="../data/80MB/request_get_80_consumptions.csv", sep 
 get.180.80m = read.csv2(file="../data/80MB/request_get_180_consumptions.csv", sep=",")
 post.80.80m = read.csv2(file="../data/80MB/request_post_80_create_water_consumption.csv", sep=",")
 post.180.80m = read.csv2(file="../data/80MB/request_post_180_create_water_consumption.csv", sep=",")
+
+
 ```
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
@@ -39,7 +43,7 @@ get_timestamp_diff <- function(df){
   end = df %>% filter(df$MOMENTO == "END")
   
   df = left_join(begin, end, by=c("ID", "TIPO_REQUISICAO"))
-  df$TIMESTAMP = (df$TIMESTAMP.y / 1000000) - (df$TIMESTAMP.x / 1000000)
+  df$TIMESTAMP = ((df$TIMESTAMP.y) - (df$TIMESTAMP.x) ) / 1000000
   df = df %>% select("ID", "TIPO_REQUISICAO", "TIMESTAMP")
 
   return(df)
@@ -102,12 +106,38 @@ tests <- rbind(post.all, get.all)
 
 
 ```{r  warning=FALSE, message=FALSE, error=FALSE}
+# Check the ylim
 plot(log10(TIMESTAMP) ~ RAM, data = post.all)
 
-ggplot(data = post.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) +
-  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) #+ ylim(1,2)
+posts_by_ram <- ggplot(data = post.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + geom_boxplot()
+  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
+posts_by_ram +labs(colour = "Requisições por minuto", x="Memória RAM Disponível (MB)", y= "Tempo de resposta (em milisegundo)")
 
-ggplot(data = tests, aes(x=as.factor(REQ_MIN), y=TIMESTAMP, colour=as.factor(RAM))) +
-  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) #+ ylim(0,150) 
+
+posts_by_req <- ggplot(data = post.all, aes(x=as.factor(REQ_MIN), y=log10(TIMESTAMP), colour=as.factor(RAM)))  + geom_boxplot()
+  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
+posts_by_req + ylim(1,2) +labs(colour = "Memória RAM Disponível (MB)", x="Requisições por minuto", y= "Tempo de resposta (em milisegundo)")
+
+
+#GET
+gets_by_ram <- ggplot(data = get.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + geom_boxplot()
+  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
+gets_by_ram +labs(colour = "Requisições por minuto", x="Memória RAM Disponível (MB)", y= "Tempo de resposta (em milisegundo)")
+
+
+gets_by_req <- ggplot(data = get.all, aes(x=as.factor(REQ_MIN), y=log10(TIMESTAMP), colour=as.factor(RAM)))  + geom_boxplot()
+  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
+gets_by_req + ylim(1,2) +labs(colour = "Memória RAM Disponível (MB)", x="Requisições por minuto", y= "Tempo de resposta (em milisegundo)")
+
+
+
+
+
+#ALL BY TYPE
+ggplot(data = tests, aes(x=as.factor(TIPO_REQUISICAO), y=TIMESTAMP, colour=as.factor(TIPO_REQUISICAO))) + geom_boxplot() + ylim(0,75)
+  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1)
+
+  
+ggplot(data = tests, aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(TIPO_REQUISICAO))) + geom_boxplot() + ylim(0,75)  
 ```
 

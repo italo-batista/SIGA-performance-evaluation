@@ -8,7 +8,7 @@ while read -r line
 do
     ed_id="$line"
     
-    for i in {1..15}
+    for i in {1..7}
 	do
 	  
 	  id=$(echo "scale=2; $id + 1"|bc)

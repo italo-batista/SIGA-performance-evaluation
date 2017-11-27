@@ -105,9 +105,9 @@ tests <- rbind(post.all, get.all)
 plot(log10(TIMESTAMP) ~ RAM, data = post.all)
 
 ggplot(data = post.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) +
-  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) + ylim(1,2)
+  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) #+ ylim(1,2)
 
 ggplot(data = tests, aes(x=as.factor(REQ_MIN), y=TIMESTAMP, colour=as.factor(RAM))) +
-  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) + ylim(0,150) 
+  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) #+ ylim(0,150) 
 ```
 

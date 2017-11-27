@@ -1,8 +1,7 @@
 #!/bin/bash
 
 id=3001
-filename="../../data/eds_ids.txt"
-"ID,TIPO_REQUISICAO,MOMENTO,TIMESTAMP" >> "../../data/request_get_180_consumptions.csv"
+filename="../data/eds_ids.txt"
 
 while read -r line
 do

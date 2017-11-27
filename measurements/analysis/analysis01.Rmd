@@ -134,7 +134,16 @@ gets_by_req <- ggplot(data = get.all, aes(x=as.factor(REQ_MIN), y=log10(TIMESTAM
   #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
 gets_by_req + ylim(1,2) +labs(colour = "Memória RAM Disponível (MB)", x="Requisições por minuto", y= "Tempo de resposta (em milisegundo)")
 
-ggplot(data = tests, aes(x=as.factor(TIPO_REQUISICAO), y=TIMESTAMP, colour=as.factor(RAM))) +
+
+
+
+
+#ALL BY TYPE
+ggplot(data = tests, aes(x=as.factor(TIPO_REQUISICAO), y=TIMESTAMP, colour=as.factor(TIPO_REQUISICAO))) + geom_boxplot() + ylim(0,75)
   geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1)
+
+  
+ggplot(data = tests, aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(TIPO_REQUISICAO))) + geom_boxplot() + ylim(0,75)  
+  
 ```
 

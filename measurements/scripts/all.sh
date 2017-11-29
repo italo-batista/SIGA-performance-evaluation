@@ -15,6 +15,7 @@ echo "GET 180 DONE"
 source "./request_get_80_consumptions.sh"
 echo "GET 80 DONE"
 
+
 mv "../../data/request_get_180_consumptions.csv" "../../data/1GB/A5/"
 mv "../../data/request_get_80_consumptions.csv" "../../data/1GB/A5/"
 mv "../../data/request_post_80_create_water_consumption.csv" "../../data/1GB/A5/"

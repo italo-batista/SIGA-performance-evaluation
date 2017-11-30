@@ -3,6 +3,3 @@
 **/*.Rhistory
 **/*.Rproj
 **/*.RData
-**/data
-**/data/
-/data/

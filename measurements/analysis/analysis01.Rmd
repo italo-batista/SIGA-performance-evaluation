@@ -14,29 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-
-```
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
-get.80.1g = read.csv2(file="../data/1GB/request_get_80_consumptions.csv", sep = ",")
-get.180.1g = read.csv2(file="../data/1GB/request_get_180_consumptions.csv", sep=",")
-post.80.1g = read.csv2(file="../data/1GB/request_post_80_create_water_consumption.csv", sep=",")
-post.180.1g = read.csv2(file="../data/1GB/request_post_180_create_water_consumption.csv", sep=",")
-
-get.80.500m = read.csv2(file="../data/500MB/request_get_80_consumptions.csv", sep = ",")
-get.180.500m = read.csv2(file="../data/500MB/request_get_180_consumptions.csv", sep=",")
-post.80.500m = read.csv2(file="../data/500MB/request_post_80_create_water_consumption.csv", sep=",")
-post.180.500m = read.csv2(file="../data/500MB/request_post_180_create_water_consumption.csv", sep=",")
-
-get.80.80m = read.csv2(file="../data/80MB/request_get_80_consumptions.csv", sep = ",")
-get.180.80m = read.csv2(file="../data/80MB/request_get_180_consumptions.csv", sep=",")
-post.80.80m = read.csv2(file="../data/80MB/request_post_80_create_water_consumption.csv", sep=",")
-post.180.80m = read.csv2(file="../data/80MB/request_post_180_create_water_consumption.csv", sep=",")
-
-
-```
-
-```{r warning=FALSE, message=FALSE, error=FALSE}
 get_timestamp_diff <- function(df){
   
   begin = df %>% filter(df$MOMENTO == "BEGIN")
@@ -51,68 +28,105 @@ get_timestamp_diff <- function(df){
 ```
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
-get.180.1g = get_timestamp_diff(get.180.1g)
-get.180.500m = get_timestamp_diff(get.180.500m)
-get.180.80m = get_timestamp_diff(get.180.80m)
-get.80.1g = get_timestamp_diff(get.80.1g)
-get.80.500m = get_timestamp_diff(get.80.500m)
-get.80.80m = get_timestamp_diff(get.80.80m)
-post.180.1g = get_timestamp_diff(post.180.1g)
-post.180.500m = get_timestamp_diff(post.180.500m)
-post.180.80m = get_timestamp_diff(post.180.80m)
-post.80.1g = get_timestamp_diff(post.80.1g)
-post.80.500m = get_timestamp_diff(post.80.500m)
-post.80.80m = get_timestamp_diff(post.80.80m)
+requests.all <- data.frame() 
+experimentos = c('I1', 'I2', 'I3', 'I4', 'A1', 'A2', 'A3', 'A4', 'A5')
+
+for (e in experimentos) {
+  
+  path_80mb = paste("../data/80MB/", e, sep="")
+  path_500mb = paste("../data/500MB/", e, sep="")
+  path_1gb = paste("../data/1GB/", e, sep="")
+  
+  get.80.1g = read.csv2(file=paste(path_1gb, "/request_get_80_consumptions.csv", sep=""), sep = ",")
+  get.180.1g = read.csv2(file=paste(path_1gb, "/request_get_180_consumptions.csv", sep=""), sep=",")
+  post.80.1g = read.csv2(file=paste(path_1gb, "/request_post_80_create_water_consumption.csv", sep=""), sep=",")
+  post.180.1g = read.csv2(file=paste(path_1gb, "/request_post_180_create_water_consumption.csv", sep=""), sep=",")
+  
+  get.80.500m = read.csv2(file=paste(path_500mb, "/request_get_80_consumptions.csv", sep=""), sep = ",")
+  get.180.500m = read.csv2(file=paste(path_500mb, "/request_get_180_consumptions.csv", sep=""), sep=",")
+  post.80.500m = read.csv2(file=paste(path_500mb, "/request_post_80_create_water_consumption.csv", sep=""), sep=",")
+  post.180.500m = read.csv2(file=paste(path_500mb, "/request_post_180_create_water_consumption.csv", sep=""), sep=",")
+  
+  get.80.80m = read.csv2(file=paste(path_80mb, "/request_get_80_consumptions.csv", sep=""), sep = ",")
+  get.180.80m = read.csv2(file=paste(path_80mb, "/request_get_180_consumptions.csv", sep=""), sep=",")
+  post.80.80m = read.csv2(file=paste(path_80mb, "/request_post_80_create_water_consumption.csv", sep=""), sep=",")
+  post.180.80m = read.csv2(file=paste(path_80mb, "/request_post_180_create_water_consumption.csv", sep=""), sep=",")
+
+  get.180.1g = get_timestamp_diff(get.180.1g)
+  get.180.500m = get_timestamp_diff(get.180.500m)
+  get.180.80m = get_timestamp_diff(get.180.80m)
+  get.80.1g = get_timestamp_diff(get.80.1g)
+  get.80.500m = get_timestamp_diff(get.80.500m)
+  get.80.80m = get_timestamp_diff(get.80.80m)
+  post.180.1g = get_timestamp_diff(post.180.1g)
+  post.180.500m = get_timestamp_diff(post.180.500m)
+  post.180.80m = get_timestamp_diff(post.180.80m)
+  post.80.1g = get_timestamp_diff(post.80.1g)
+  post.80.500m = get_timestamp_diff(post.80.500m)
+  post.80.80m = get_timestamp_diff(post.80.80m)
+  
+  get.180.1g["RAM"] <- 1024
+  get.180.500m["RAM"] <- 500
+  get.180.80m["RAM"] <- 80
+  
+  get.180.1g["REQ_MIN"] <- 180
+  get.180.500m["REQ_MIN"] <- 180
+  get.180.80m["REQ_MIN"] <- 180
+  
+  post.180.1g["RAM"] <- 1024
+  post.180.500m["RAM"] <- 500
+  post.180.80m["RAM"] <- 80
+  
+  post.180.1g["REQ_MIN"] <- 180
+  post.180.500m["REQ_MIN"] <- 180
+  post.180.80m["REQ_MIN"] <- 180
+  
+  
+  get.80.1g["RAM"] <- 1024
+  get.80.500m["RAM"] <- 500
+  get.80.80m["RAM"] <- 80
+  
+  get.80.1g["REQ_MIN"] <- 80
+  get.80.500m["REQ_MIN"] <- 80
+  get.80.80m["REQ_MIN"] <- 80
+  
+  post.80.1g["RAM"] <- 1024
+  post.80.500m["RAM"] <- 500
+  post.80.80m["RAM"] <- 80
+  
+  post.80.1g["REQ_MIN"] <- 80
+  post.80.500m["REQ_MIN"] <- 80
+  post.80.80m["REQ_MIN"] <- 80
+  
+  post.all <- rbind(post.180.1g,post.180.500m,post.180.80m,post.80.1g,post.80.500m,post.80.80m)
+  get.all <- rbind(get.180.1g,get.180.500m,get.180.80m,get.80.1g,get.80.500m,get.80.80m)
+  
+  post.all["EXPERIMENTO"] <- e
+  get.all["EXPERIMENTO"] <- e
+  
+  requests.all <- rbind(requests.all, post.all, get.all)
+}
 ```
 
-```{r warning=FALSE, message=FALSE, error=FALSE}
-get.180.1g["RAM"] <- 1024
-get.180.500m["RAM"] <- 500
-get.180.80m["RAM"] <- 80
-
-get.180.1g["REQ_MIN"] <- 180
-get.180.500m["REQ_MIN"] <- 180
-get.180.80m["REQ_MIN"] <- 180
-
-post.180.1g["RAM"] <- 1024
-post.180.500m["RAM"] <- 500
-post.180.80m["RAM"] <- 80
-
-post.180.1g["REQ_MIN"] <- 180
-post.180.500m["REQ_MIN"] <- 180
-post.180.80m["REQ_MIN"] <- 180
-
-
-get.80.1g["RAM"] <- 1024
-get.80.500m["RAM"] <- 500
-get.80.80m["RAM"] <- 80
-
-get.80.1g["REQ_MIN"] <- 80
-get.80.500m["REQ_MIN"] <- 80
-get.80.80m["REQ_MIN"] <- 80
-
-post.80.1g["RAM"] <- 1024
-post.80.500m["RAM"] <- 500
-post.80.80m["RAM"] <- 80
-
-post.80.1g["REQ_MIN"] <- 80
-post.80.500m["REQ_MIN"] <- 80
-post.80.80m["REQ_MIN"] <- 80
-
-post.all <- rbind(post.180.1g,post.180.500m,post.180.80m,post.80.1g,post.80.500m,post.80.80m)
-get.all <- rbind(get.180.1g,get.180.500m,get.180.80m,get.80.1g,get.80.500m,get.80.80m)
-tests <- rbind(post.all, get.all)
+```{r fig.height=7}
+ggplot(data=requests.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + 
+  geom_boxplot() +
+  facet_wrap(~ EXPERIMENTO, ncol = 5)
 ```
 
+```{r fig.height=7}
+ggplot(data=requests.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + 
+  geom_boxplot() +
+  facet_wrap(~ TIPO_REQUISICAO, ncol = 2)
+```
 
 ```{r  warning=FALSE, message=FALSE, error=FALSE}
 # Check the ylim
-plot(log10(TIMESTAMP) ~ RAM, data = post.all)
+plot(log10(TIMESTAMP) ~ RAM, data = requests.all)
 
 posts_by_ram <- ggplot(data = post.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + geom_boxplot()
   #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
 posts_by_ram +labs(colour = "Requisições por minuto", x="Memória RAM Disponível (MB)", y= "Tempo de resposta (em milisegundo)")
-
 
 posts_by_req <- ggplot(data = post.all, aes(x=as.factor(REQ_MIN), y=log10(TIMESTAMP), colour=as.factor(RAM)))  + geom_boxplot()
   #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
@@ -124,20 +138,14 @@ gets_by_ram <- ggplot(data = get.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), 
   #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
 gets_by_ram +labs(colour = "Requisições por minuto", x="Memória RAM Disponível (MB)", y= "Tempo de resposta (em milisegundo)")
 
-
 gets_by_req <- ggplot(data = get.all, aes(x=as.factor(REQ_MIN), y=log10(TIMESTAMP), colour=as.factor(RAM)))  + geom_boxplot()
   #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
 gets_by_req + ylim(1,2) +labs(colour = "Memória RAM Disponível (MB)", x="Requisições por minuto", y= "Tempo de resposta (em milisegundo)")
-
-
-
 
 
 #ALL BY TYPE
 ggplot(data = tests, aes(x=as.factor(TIPO_REQUISICAO), y=TIMESTAMP, colour=as.factor(TIPO_REQUISICAO))) + geom_boxplot() + ylim(0,75)
   geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1)
 
-  
 ggplot(data = tests, aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(TIPO_REQUISICAO))) + geom_boxplot() + ylim(0,75)  
 ```
-

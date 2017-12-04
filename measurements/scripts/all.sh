@@ -15,6 +15,7 @@ echo "GET 180 DONE"
 source "./request_get_80_consumptions.sh"
 echo "GET 80 DONE"
 
+mkdir -p "../../data/$1B/$2/"
 
 mv "../../data/request_get_180_consumptions.csv" "../../data/$1B/$2/"
 mv "../../data/request_get_80_consumptions.csv" "../../data/$1B/$2/"

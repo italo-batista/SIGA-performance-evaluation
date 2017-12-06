@@ -29,13 +29,12 @@ get_timestamp_diff <- function(df){
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 requests.all <- data.frame() 
-experimentos = c('I1', 'I2', 'I3', 'I4', 'A1', 'A2', 'A3', 'A4', 'A5')
+experimentos = c(1:40)
 
 for (e in experimentos) {
   
-  path_80mb = paste("../data/80MB/", e, sep="")
-  path_500mb = paste("../data/500MB/", e, sep="")
-  path_1gb = paste("../data/1GB/", e, sep="")
+  path_500mb = paste("../data/500MB/", "E", e, sep="")
+  path_1gb = paste("../data/1GB/", "E", e, sep="")
   
   get.80.1g = read.csv2(file=paste(path_1gb, "/request_get_80_consumptions.csv", sep=""), sep = ",")
   get.180.1g = read.csv2(file=paste(path_1gb, "/request_get_180_consumptions.csv", sep=""), sep=",")
@@ -47,59 +46,41 @@ for (e in experimentos) {
   post.80.500m = read.csv2(file=paste(path_500mb, "/request_post_80_create_water_consumption.csv", sep=""), sep=",")
   post.180.500m = read.csv2(file=paste(path_500mb, "/request_post_180_create_water_consumption.csv", sep=""), sep=",")
   
-  get.80.80m = read.csv2(file=paste(path_80mb, "/request_get_80_consumptions.csv", sep=""), sep = ",")
-  get.180.80m = read.csv2(file=paste(path_80mb, "/request_get_180_consumptions.csv", sep=""), sep=",")
-  post.80.80m = read.csv2(file=paste(path_80mb, "/request_post_80_create_water_consumption.csv", sep=""), sep=",")
-  post.180.80m = read.csv2(file=paste(path_80mb, "/request_post_180_create_water_consumption.csv", sep=""), sep=",")
-
   get.180.1g = get_timestamp_diff(get.180.1g)
   get.180.500m = get_timestamp_diff(get.180.500m)
-  get.180.80m = get_timestamp_diff(get.180.80m)
   get.80.1g = get_timestamp_diff(get.80.1g)
   get.80.500m = get_timestamp_diff(get.80.500m)
-  get.80.80m = get_timestamp_diff(get.80.80m)
   post.180.1g = get_timestamp_diff(post.180.1g)
   post.180.500m = get_timestamp_diff(post.180.500m)
-  post.180.80m = get_timestamp_diff(post.180.80m)
   post.80.1g = get_timestamp_diff(post.80.1g)
   post.80.500m = get_timestamp_diff(post.80.500m)
-  post.80.80m = get_timestamp_diff(post.80.80m)
-  
+
   get.180.1g["RAM"] <- 1024
   get.180.500m["RAM"] <- 500
-  get.180.80m["RAM"] <- 80
-  
+
   get.180.1g["REQ_MIN"] <- 180
   get.180.500m["REQ_MIN"] <- 180
-  get.180.80m["REQ_MIN"] <- 180
-  
+
   post.180.1g["RAM"] <- 1024
   post.180.500m["RAM"] <- 500
-  post.180.80m["RAM"] <- 80
-  
+
   post.180.1g["REQ_MIN"] <- 180
   post.180.500m["REQ_MIN"] <- 180
-  post.180.80m["REQ_MIN"] <- 180
-  
-  
+
   get.80.1g["RAM"] <- 1024
   get.80.500m["RAM"] <- 500
-  get.80.80m["RAM"] <- 80
-  
+
   get.80.1g["REQ_MIN"] <- 80
   get.80.500m["REQ_MIN"] <- 80
-  get.80.80m["REQ_MIN"] <- 80
-  
+
   post.80.1g["RAM"] <- 1024
   post.80.500m["RAM"] <- 500
-  post.80.80m["RAM"] <- 80
-  
+
   post.80.1g["REQ_MIN"] <- 80
   post.80.500m["REQ_MIN"] <- 80
-  post.80.80m["REQ_MIN"] <- 80
-  
-  post.all <- rbind(post.180.1g,post.180.500m,post.180.80m,post.80.1g,post.80.500m,post.80.80m)
-  get.all <- rbind(get.180.1g,get.180.500m,get.180.80m,get.80.1g,get.80.500m,get.80.80m)
+
+  post.all <- rbind(post.180.1g,post.180.500m,post.80.1g,post.80.500m)
+  get.all <- rbind(get.180.1g,get.180.500m,get.80.1g,get.80.500m)
   
   post.all["EXPERIMENTO"] <- e
   get.all["EXPERIMENTO"] <- e
@@ -109,13 +90,13 @@ for (e in experimentos) {
 ```
 
 ```{r fig.height=7}
-ggplot(data=requests.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + 
+ggplot(data=requests.all, aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(REQ_MIN))) + 
   geom_boxplot() +
   facet_wrap(~ EXPERIMENTO, ncol = 5)
 ```
 
 ```{r fig.height=7}
-ggplot(data=requests.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + 
+ggplot(data=requests.all, aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(REQ_MIN))) + 
   geom_boxplot() +
   facet_wrap(~ TIPO_REQUISICAO, ncol = 2)
 ```

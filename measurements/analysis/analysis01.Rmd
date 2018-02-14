@@ -1,6 +1,3 @@
----
-output: pdf_document
----
 
 ```{r setup, include=FALSE}
 #install.packages("knitr")
@@ -12,6 +9,8 @@ library(ggplot2)
 
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Importanto os dados
 
 ```{r warning=FALSE, message=FALSE, error=FALSE}
 get_timestamp_diff <- function(df){
@@ -89,44 +88,187 @@ for (e in experimentos) {
 }
 ```
 
+```{r}
+requests.all = requests.all[complete.cases(requests.all), ]
+```
+
+# Gráficos
+
 ```{r fig.height=7}
-ggplot(data=requests.all, aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(REQ_MIN))) + 
+requests.all %>%
+  ggplot(aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(REQ_MIN))) + 
   geom_boxplot() +
-  facet_wrap(~ EXPERIMENTO, ncol = 5)
+  scale_y_log10() +
+  facet_wrap(~ EXPERIMENTO, ncol = 10) + 
+  
+  ggtitle("Comportamento de tempos de respostas para requisições nos 40 ensaios") +
+  xlab("Limite de memória disponível") +
+  ylab("Tempo de resposta (milissegundos)") +
+  theme(legend.title=element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.ticks.x = element_blank()) +
+  theme(axis.text.x = element_blank()) 
 ```
 
 ```{r fig.height=7}
-ggplot(data=requests.all, aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(REQ_MIN))) + 
+requests.all %>%
+  ggplot(aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(REQ_MIN))) + 
   geom_boxplot() +
-  facet_wrap(~ TIPO_REQUISICAO, ncol = 2)
+  ylim(1, 100) +
+  facet_wrap(~ EXPERIMENTO, ncol = 10) + 
+  
+  ggtitle("Comportamento de tempos de respostas para requisições nos 40 ensaios") +
+  labs(subtitle = "Requisições abaixo ou igual a 100 milissegundos de reposta") +
+  xlab("Limite de memória disponível") +
+  ylab("Tempo de resposta (milissegundos)") +
+  theme(legend.title=element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
-```{r  warning=FALSE, message=FALSE, error=FALSE}
-# Check the ylim
-plot(log10(TIMESTAMP) ~ RAM, data = requests.all)
+```{r}
+corr.time.memo = requests.all %>% 
+  summarise(correlacao = cor(TIMESTAMP, RAM, method = "pearson"))
+corr.time.memo["VAR"] = "Memória disponível"
 
-posts_by_ram <- ggplot(data = post.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + geom_boxplot()
-  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
-posts_by_ram +labs(colour = "Requisições por minuto", x="Memória RAM Disponível (MB)", y= "Tempo de resposta (em milisegundo)")
+corr.time.tipo = requests.all %>% 
+  summarise(correlacao = cor(TIMESTAMP, as.numeric(TIPO_REQUISICAO), method = "pearson"))
+corr.time.tipo["VAR"] = "Tipo de requisição"
 
-posts_by_req <- ggplot(data = post.all, aes(x=as.factor(REQ_MIN), y=log10(TIMESTAMP), colour=as.factor(RAM)))  + geom_boxplot()
-  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
-posts_by_req + ylim(1,2) +labs(colour = "Memória RAM Disponível (MB)", x="Requisições por minuto", y= "Tempo de resposta (em milisegundo)")
+corr.time.freq = requests.all %>% 
+  summarise(correlacao = cor(TIMESTAMP, REQ_MIN, method = "pearson"))
+corr.time.freq["VAR"] = "Requisições por minuto"
 
+correlacoes = rbind(corr.time.freq, corr.time.memo, corr.time.tipo)
 
-#GET
-gets_by_ram <- ggplot(data = get.all, aes(x=as.factor(RAM), y=log10(TIMESTAMP), colour=as.factor(REQ_MIN))) + geom_boxplot()
-  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
-gets_by_ram +labs(colour = "Requisições por minuto", x="Memória RAM Disponível (MB)", y= "Tempo de resposta (em milisegundo)")
+correlacoes %>%
+  ggplot(aes(x = reorder(VAR, correlacao), y = correlacao, fill = VAR)) +
+  geom_bar(stat = "identity", alpha = .7, width = .75) +
 
-gets_by_req <- ggplot(data = get.all, aes(x=as.factor(REQ_MIN), y=log10(TIMESTAMP), colour=as.factor(RAM)))  + geom_boxplot()
-  #geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1) 
-gets_by_req + ylim(1,2) +labs(colour = "Memória RAM Disponível (MB)", x="Requisições por minuto", y= "Tempo de resposta (em milisegundo)")
+  labs(title = 'Correlação entre Fatores e Tempo de resposta de requisição') +  
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.position="none") +
+  theme(axis.title.y=element_blank()) +
+  coord_flip()
+```
 
+```{r}
+requests.all %>%
+  ggplot(aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(REQ_MIN))) + 
+  geom_boxplot() +
+  ylim(1, 100) +
+  facet_wrap(~ TIPO_REQUISICAO, ncol = 2) +
+  
+  ggtitle("Comparando tempos de respostas para tipos de requisições ") +
+  xlab("Limite de memória disponível") +
+  ylab("Tempo de resposta (milissegundos)") +
+  theme_bw() +
+  theme(legend.title=element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
 
-#ALL BY TYPE
-ggplot(data = tests, aes(x=as.factor(TIPO_REQUISICAO), y=TIMESTAMP, colour=as.factor(TIPO_REQUISICAO))) + geom_boxplot() + ylim(0,75)
-  geom_jitter(size=1, alpha=0.4, width=0.4, height=0.1)
+```{r}
+plot = requests.all %>%
+  ggplot(aes(x=as.factor(REQ_MIN), y=TIMESTAMP, color=as.factor(TIPO_REQUISICAO))) + 
+  geom_boxplot() +
+  ylim(1, 100) +
+  facet_wrap(~ RAM, ncol = 2) +
+  
+  ggtitle("Comparando tempos de respostas para limites de memórias diferentes") +
+  xlab("Requisições por minuto") +
+  ylab("Tempo de resposta (milissegundos)") +
+  theme_bw() +
+  theme(legend.title=element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  #theme(axis.ticks.x = element_blank()) +
+  #theme(axis.text.x = element_blank()) 
+plot
+ggplot_build(plot)$data
+```
 
-ggplot(data = tests, aes(x=as.factor(RAM), y=TIMESTAMP, colour=as.factor(TIPO_REQUISICAO))) + geom_boxplot() + ylim(0,75)  
+```{r}
+requests.all$rowname <- rownames(requests.all)
+
+requests.all %>%
+  group_by(EXPERIMENTO) %>%
+  summarise(mediana = median(TIMESTAMP)) %>%
+
+  ggplot(aes(x=EXPERIMENTO, y=mediana)) +
+  geom_point(color="gold4") + 
+  
+  ggtitle("Mediana dos tempos de resposta nos experimentos") +
+  xlab("Experimentos") +
+  ylab("Mediana do tempo de resposta (milissegundos)") +
+  theme_bw() +
+  theme(legend.title=element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  
+```
+
+```{r fig.height=5, fig.width=4}
+d = requests.all %>% filter(TIPO_REQUISICAO == "POST") %>% select(TIMESTAMP)
+d %>%
+  ggplot(aes(x=0, y=TIMESTAMP)) +
+  geom_boxplot(color="deeppink3") +
+  ylim(1, 100) +
+
+  ggtitle("Boxplot") +
+  labs(subtitle = "Fator=Tipo de Requisição, Nível=POST") +
+  ylab("Tempo de resposta (milissegundos)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title.x = element_blank()) +
+  theme(axis.text.x = element_blank()) 
+
+summary(d)
+```
+
+```{r fig.height=5, fig.width=4}
+d = requests.all %>% filter(TIPO_REQUISICAO == "GET") %>% select(TIMESTAMP)
+d %>%
+  ggplot(aes(x=0, y=TIMESTAMP)) +
+  geom_boxplot(color="darkblue") +
+  ylim(1, 100) +
+
+  ggtitle("Boxplot") +
+  labs(subtitle = "Fator=Tipo de Requisição, Nível=GET") +
+  ylab("Tempo de resposta (milissegundos)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title.x = element_blank()) +
+  theme(axis.text.x = element_blank()) 
+
+summary(d)
+```
+
+```{r fig.height=5, fig.width=4}
+d = requests.all %>% filter(RAM == 500) %>% select(TIMESTAMP)
+d %>%
+  ggplot(aes(x=0, y=TIMESTAMP)) +
+  geom_boxplot(color="darkred") +
+  ylim(1, 100) +
+
+  ggtitle("Boxplot") +
+  labs(subtitle = "Fator=RAM, Nível=500") +
+  ylab("Tempo de resposta (milissegundos)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title.x = element_blank()) +
+  theme(axis.text.x = element_blank()) 
+
+summary(d)
+```
+
+```{r fig.height=5, fig.width=4}
+d = requests.all %>% filter(RAM == 1024) %>% select(TIMESTAMP)
+d %>%
+  ggplot(aes(x=0, y=TIMESTAMP)) +
+  geom_boxplot(color="darkgreen") +
+  ylim(1, 100) +
+
+  ggtitle("Boxplot") +
+  labs(subtitle = "Fator=RAM, Nível=1024") +
+  ylab("Tempo de resposta (milissegundos)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title.x = element_blank()) +
+  theme(axis.text.x = element_blank()) 
+
+summary(d)
 ```
